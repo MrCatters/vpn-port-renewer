@@ -5,12 +5,19 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from pyotp import TOTP
-import os 
+import os
+from dotenv import load_dotenv
 
 
 options = Options()
 options.headless = False
 driver = webdriver.Firefox(options=options)
+
+WINDSCRIBE_USERNAME = os.getenv(WINDSCRIBE_USERNAME)
+WINDSCRIBE_PASSWORD = os.getenv(WINDSCRIBE_PASSWORD)
+WINDSCRIBE_TOTP = os.getenv(WINDSCRIBE_TOTP)
+DELUGE_PASSWORD = os.getenv(DELUGE_PASSWORD)
+
 
 def main():
 	try:
