@@ -4,27 +4,36 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+
 from pyotp import TOTP
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
 
+
+# Initializes selenium configs.
 options = Options()
+# Change based on use case.
 options.headless = False
 driver = webdriver.Firefox(options=options)
 
-WINDSCRIBE_USERNAME = os.getenv(WINDSCRIBE_USERNAME)
-WINDSCRIBE_PASSWORD = os.getenv(WINDSCRIBE_PASSWORD)
-WINDSCRIBE_TOTP = os.getenv(WINDSCRIBE_TOTP)
-DELUGE_PASSWORD = os.getenv(DELUGE_PASSWORD)
+
+
+# Sets enviornment variables from .env.
+load_dotenv(find_dotenv())
+WINDSCRIBE_USERNAME = os.environ.get("WINDSCRIBE_USERNAME")
+WINDSCRIBE_PASSWORD = os.environ.get("WINDSCRIBE_PASSWORD")
+WINDSCRIBE_TOTP = os.environ.get("WINDSCRIBE_TOTP")
+DELUGE_PASSWORD = os.environ.get("DELUGE_PASSWORD")
+
 
 
 def main():
 	try:
 		windscribe_login(
-			'REDACTED'
-			,'REDACTED'
-			,'REDACTED'
+			WINDSCRIBE_USERNAME
+			,WINDSCRIBE_PASSWORD
+			,WINDSCRIBE_TOTP
 			)
 		print("Windscribe login successful.")
 	except:
@@ -39,7 +48,7 @@ def main():
 		quit()
 
 	try:
-		deluge_login("REDACTED")
+		deluge_login(DELUGE_PASSWORD)
 		print("Deluge login successful.")
 	except:
 		print("UNABLE TO LOGIN TO DELUGE!!!!")
@@ -58,17 +67,25 @@ def main():
 
 
 def windscribe_port_change():
-	"""Establishes an ephemeral port and returns it"""
+	"""
+	Establishes an ephemeral port and returns it.
+
+	Returns
+	----------
+	port.text
+	"""
+
+
 	driver.get('https://windscribe.com/myaccount#porteph')
 	driver.refresh()
+
 
 	"""
 	If a port is already assigned, it will be deleted and a new one will be assigned.
 	If there is no port, it will be assigned.
 	"""
 	try:
-		delete_button = WebDriverWait(
-			driver, 3).until(
+		delete_button = WebDriverWait(driver, 3).until(
 			EC.element_to_be_clickable(
 			(By.CSS_SELECTOR, 'button.green-btn:nth-child(3)')))
 		delete_button.click()
@@ -81,7 +98,7 @@ def windscribe_port_change():
 		driver, 2).until(
 		EC.element_to_be_clickable(
 		(By.CSS_SELECTOR, '#epf-port-info > span:nth-child(3)')))
-	return port.text`
+	return port.text
 
 
 
